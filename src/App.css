@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  @apply px-4 mx-auto max-w-7xl;
+}
+
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
+  padding: 0;
+}
+
+.ant-drawer-body {
+  padding: 24px;
+}
+
+.ant-btn-dashed {
+  background-color: #20ff18;
+}
+
+.ant-table-wrapper {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .ant-drawer {
+    width: 100% !important;
+  }
+  
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
