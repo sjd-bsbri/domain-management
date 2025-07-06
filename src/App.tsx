@@ -3,12 +3,14 @@ import { Button, Drawer, Layout, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import DomainTable from './components/DomainTable';
 import DomainForm from './components/DomainForm';
-import { Domain } from './services/api';
+import { Domain } from './types';
+
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 function App() {
+  
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingDomain, setEditingDomain] = useState<Domain | undefined>(undefined);
 
