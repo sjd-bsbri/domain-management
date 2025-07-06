@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
-import { Form, Input, Switch, Select, Button, message } from 'antd';
+import { Form, Input, Switch, Select, Button, message, Divider, Alert, Space, Typography } from 'antd';
+import { SaveOutlined, LinkOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useAddDomainMutation, useUpdateDomainMutation } from '../services/api';
 import { Domain, DomainRequest } from '../types';
+
+const { Text } = Typography;
 
 interface DomainFormProps {
   initialValues?: Domain;
@@ -31,10 +34,16 @@ const DomainForm: React.FC<DomainFormProps> = ({ initialValues, onSuccess }) => 
           id: initialValues.id,
           domain: values
         }).unwrap();
-        message.success('Domain updated successfully');
+        message.success({
+          content: 'Domain updated successfully',
+          icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
+        });
       } else {
         await addDomain(values).unwrap();
-        message.success('Domain added successfully');
+        message.success({
+          content: 'Domain added successfully',
+          icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
+        });
       }
       form.resetFields();
       onSuccess();
@@ -45,51 +54,104 @@ const DomainForm: React.FC<DomainFormProps> = ({ initialValues, onSuccess }) => 
   };
 
   const options = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'verified', label: 'Verified' },
-    { value: 'rejected', label: 'Rejected' },
+    { value: 'pending', label: 'Pending', icon: '🕒' },
+    { value: 'verified', label: 'Verified', icon: '✅' },
+    { value: 'rejected', label: 'Rejected', icon: '❌' },
   ];
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleSubmit}
-      initialValues={{ isActive: true, status: 'pending' }}
-    >
-      <Form.Item
-        name="domain"
-        label="Domain"
-        rules={[
-          { required: true, message: 'Please enter a domain' },
-          { type: 'url', message: 'Please enter a valid URL' }
-        ]}
+    <div className="fade-in">
+      {isEditing ? (
+        <Alert
+          message="Editing Domain"
+          description={`You are currently editing ${initialValues?.domain}`}
+          type="info"
+          showIcon
+          className="mb-6"
+        />
+      ) : (
+        <Alert
+          message="Add New Domain"
+          description="Enter the details below to add a new domain"
+          type="info"
+          showIcon
+          className="mb-6"
+        />
+      )}
+      
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{ isActive: true, status: 'pending' }}
+        className="domain-form"
       >
-        <Input placeholder="https://example.com" />
-      </Form.Item>
+        <Form.Item
+          name="domain"
+          label="Domain URL"
+          rules={[
+            { required: true, message: 'Please enter a domain' },
+            { type: 'url', message: 'Please enter a valid URL' }
+          ]}
+        >
+          <Input 
+            prefix={<LinkOutlined className="text-gray-400" />} 
+            placeholder="https://example.com" 
+            size="large"
+          />
+        </Form.Item>
 
-      <Form.Item
-        name="status"
-        label="Status"
-        rules={[{ required: true, message: 'Please select a status' }]}
-      >
-        <Select options={options} />
-      </Form.Item>
+        <Divider className="my-4" />
 
-      <Form.Item
-        name="isActive"
-        label="Active"
-        valuePropName="checked"
-      >
-        <Switch />
-      </Form.Item>
+        <Form.Item
+          name="status"
+          label="Status"
+          rules={[{ required: true, message: 'Please select a status' }]}
+        >
+          <Select
+            options={options.map(option => ({
+              value: option.value,
+              label: (
+                <Space>
+                  <Text>{option.icon}</Text>
+                  <Text>{option.label}</Text>
+                </Space>
+              )
+            }))}
+            size="large"
+            placeholder="Select domain status"
+          />
+        </Form.Item>
 
-      <Form.Item>
-        <Button type="primary" htmlType="submit" loading={isLoading} block>
-          {isEditing ? 'Update Domain' : 'Add Domain'}
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item
+          name="isActive"
+          label="Active Status"
+          valuePropName="checked"
+          extra="Toggle to set the domain as active or inactive"
+        >
+          <Switch 
+            checkedChildren="Active" 
+            unCheckedChildren="Inactive" 
+          />
+        </Form.Item>
+
+        <Divider className="my-4" />
+
+        <Form.Item className="mb-0">
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            loading={isLoading} 
+            block
+            size="large"
+            icon={<SaveOutlined />}
+            className="mt-4"
+          >
+            {isEditing ? 'Update Domain' : 'Add Domain'}
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
 
